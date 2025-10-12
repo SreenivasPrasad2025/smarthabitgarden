@@ -1,63 +1,35 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import os
-from typing import Optional
+import resend
 
 def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     """
-    Send password reset email with reset token
+    Send password reset email with reset token using Resend API
 
-    Note: This is a basic implementation. In production, consider using:
-    - SendGrid, Mailgun, or AWS SES for better deliverability
-    - HTML email templates
-    - Better error handling and logging
+    Resend provides reliable email delivery that works on free hosting tiers.
+    Get your API key from: https://resend.com/api-keys
     """
-    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-    smtp_username = os.getenv("SMTP_USERNAME", "")
-    smtp_password = os.getenv("SMTP_PASSWORD", "")
-    from_email = os.getenv("FROM_EMAIL", smtp_username)
+    resend_api_key = os.getenv("RESEND_API_KEY", "")
+    from_email = os.getenv("FROM_EMAIL", "onboarding@resend.dev")
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
-    # If SMTP credentials are not configured, log the token (for development)
-    print(smtp_username,smtp_password,smtp_port,smtp_server,frontend_url)
-    if not smtp_username or not smtp_password:
+    # If Resend API key is not configured, log the token (for development)
+    if not resend_api_key:
         print(f"\n{'='*60}")
+        print(f"⚠️  RESEND_API_KEY not set - Email will not be sent")
         print(f"PASSWORD RESET TOKEN FOR {to_email}:")
         print(f"Token: {reset_token}")
         print(f"Reset URL: {frontend_url}/reset-password?token={reset_token}")
         print(f"{'='*60}\n")
         return True
 
-    try:
-        # Create message
-        message = MIMEMultipart("alternative")
-        message["Subject"] = "Password Reset - Smart Habit Garden"
-        message["From"] = from_email
-        message["To"] = to_email
+    # Set Resend API key
+    resend.api_key = resend_api_key
 
-        # Create reset URL
-        reset_url = f"{frontend_url}/reset-password?token={reset_token}"
+    # Create reset URL
+    reset_url = f"{frontend_url}/reset-password?token={reset_token}"
 
-        # Email body (plain text and HTML versions)
-        text_body = f"""
-Hello,
-
-You requested to reset your password for Smart Habit Garden.
-
-Click the link below to reset your password:
-{reset_url}
-
-This link will expire in 1 hour.
-
-If you didn't request this password reset, please ignore this email.
-
-Best regards,
-Smart Habit Garden Team
-"""
-
-        html_body = f"""
+    # HTML email body
+    html_body = f"""
 <html>
   <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -92,27 +64,25 @@ Smart Habit Garden Team
 </html>
 """
 
-        # Attach both plain text and HTML versions
-        part1 = MIMEText(text_body, "plain")
-        part2 = MIMEText(html_body, "html")
-        message.attach(part1)
-        message.attach(part2)
+    try:
+        # Send email using Resend API
+        params = {
+            "from": from_email,
+            "to": [to_email],
+            "subject": "Password Reset - Smart Habit Garden",
+            "html": html_body,
+        }
 
-        # Send email
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_username, smtp_password)
-            server.sendmail(from_email, to_email, message.as_string())
-
-        print(f"Password reset email sent to {to_email}")
+        response = resend.Emails.send(params)
+        print(f"✅ Password reset email sent to {to_email} (ID: {response.get('id', 'N/A')})")
         return True
 
     except Exception as e:
-        print(f"Failed to send email to {to_email}: {str(e)}")
-        # In development, still show the token
+        print(f"❌ Failed to send email to {to_email}: {str(e)}")
+        # In development/error, still show the token
         print(f"\n{'='*60}")
         print(f"PASSWORD RESET TOKEN FOR {to_email}:")
         print(f"Token: {reset_token}")
-        print(f"Reset URL: {frontend_url}/reset-password?token={reset_token}")
+        print(f"Reset URL: {reset_url}")
         print(f"{'='*60}\n")
         return False
