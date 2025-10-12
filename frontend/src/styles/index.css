@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Extras */
+:root {
+  --leaf: #16a34a;
+  --leaf-light: #bbf7d0;
+}
+
+/* Smooth shadow and soft green glow */
+.shadow {
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.1);
+}

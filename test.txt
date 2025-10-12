@@ -1,0 +1,10 @@
+MONGO_URI= "mongodb+srv://vn769140:C7gA7mLJgevYAXXq@clusterspaceshare.s7vmuiq.mongodb.net/"
+DB_NAME="habit_garden"
+
+SMTP_SERVER="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USERNAME="venkatasreenivas12@gmail.com"
+SMTP_PASSWORD="kfom hohx ufhd kuol"  # Use the App Password, not your regular password
+FROM_EMAIL="venkatasreenivas12@gmail.com"
+FRONTEND_URL="https://smarthabitgarden.netlify.app"
+SECRET_KEY="-tldFkB_US0jq2pu0vIyKVqUW8XIfBxFOJF7r7k6xmKJAnNoTlnNeRKg1RtkujHgwdW1de9NM0uTBTgqcmbA4Q"  # Add if not already there

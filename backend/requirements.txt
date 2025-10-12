@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+mangum
+pymongo[srv]
+python-dotenv
+pydantic
+passlib[argon2]
+python-jose[cryptography]
+python-multipart
+email-validator
+certifi
