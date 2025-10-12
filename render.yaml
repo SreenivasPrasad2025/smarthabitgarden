@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: smart-habit-garden-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r ../requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://vn769140:C7gA7mLJgevYAXXq@clusterspaceshare.s7vmuiq.mongodb.net/
+      - key: DB_NAME
+        value: habit_garden
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        value: venkatasreenivas12@gmail.com
+      - key: SMTP_PASSWORD
+        value: kfom hohx ufhd kuol
+      - key: FROM_EMAIL
+        value: venkatasreenivas12@gmail.com
+      - key: FRONTEND_URL
+        value: https://smarthabitgarden.netlify.app
+      - key: SECRET_KEY
+        value: -tldFkB_US0jq2pu0vIyKVqUW8XIfBxFOJF7r7k6xmKJAnNoTlnNeRKg1RtkujHgwdW1de9NM0uTBTgqcmbA4Q
