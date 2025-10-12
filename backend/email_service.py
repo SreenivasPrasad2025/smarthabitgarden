@@ -21,6 +21,7 @@ def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
     # If SMTP credentials are not configured, log the token (for development)
+    print(smtp_username,smtp_password,smtp_port,smtp_server,frontend_url)
     if not smtp_username or not smtp_password:
         print(f"\n{'='*60}")
         print(f"PASSWORD RESET TOKEN FOR {to_email}:")
