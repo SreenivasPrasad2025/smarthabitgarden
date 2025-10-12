@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://smart-habit-garden-fresh.vercel.app"
+  VITE_API_URL = "https://smarthabitgarden-backend.onrender.com"
 
 # Redirect all routes to index.html for SPA
 [[redirects]]
