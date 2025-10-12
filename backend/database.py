@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import certifi
 
 load_dotenv()
 
@@ -10,8 +11,14 @@ DB_NAME = os.getenv("DB_NAME", "habit_garden")
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI is not set. Add it to backend/.env")
 
-# Simple MongoDB client configuration for Railway
-client = MongoClient(MONGO_URI)
+# MongoDB client with SSL certificate configuration
+client = MongoClient(
+    MONGO_URI,
+    tlsCAFile=certifi.where(),
+    serverSelectionTimeoutMS=30000,
+    connectTimeoutMS=30000,
+    socketTimeoutMS=30000
+)
 
 db = client[DB_NAME]
 days_log_collection = db["days_log"]
