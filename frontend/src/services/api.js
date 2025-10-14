@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-console.log(API_URL)
 
 // Create axios instance
 const api = axios.create({
@@ -29,7 +28,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    // Only redirect to login if it's a 401 from a protected endpoint
+    // Don't redirect if it's from the login endpoint itself
+    if (error.response &&
+        error.response.status === 401 &&
+        !error.config.url.includes('/auth/login')) {
       // Token expired or invalid - clear storage and redirect to login
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
