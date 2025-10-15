@@ -26,9 +26,9 @@ app = FastAPI(title="Smart Habit Garden API", version="1.0.0", lifespan=lifespan
 
 # Configure CORS to allow frontend access
 origins = [
-    "http://localhost:5173",  # Local development
+    "http://localhost:5173",
     "http://localhost:3000",
-    "https://smarthabitgarden.netlify.app",  # Production frontend
+    "https://smarthabitgarden.netlify.app",
 ]
 
 app.add_middleware(
@@ -37,6 +37,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origin_regex=r"https://.*\.netlify\.app",
 )
 
 app.include_router(auth.router)
