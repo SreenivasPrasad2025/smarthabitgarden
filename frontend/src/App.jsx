@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Landing from "./pages/Landing";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -14,6 +15,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* Public routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -21,20 +23,15 @@ export default function App() {
 
           {/* Protected routes */}
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <div className="min-h-screen">
-                  <Home />
-                  <footer className="text-center text-xs text-gray-400 py-6">
-                    Built with React, FastAPI & MongoDB
-                  </footer>
-                </div>
+                <Home />
               </ProtectedRoute>
             }
           />
 
-          {/* Catch all - redirect to home */}
+          {/* Catch all - redirect to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

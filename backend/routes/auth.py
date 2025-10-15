@@ -32,7 +32,6 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(user: UserCreate):
     """Register a new user"""
-    # Check if user already exists
     existing_user = users_collection.find_one({"email": user.email})
     if existing_user:
         raise HTTPException(
@@ -40,7 +39,6 @@ async def signup(user: UserCreate):
             detail="Email already registered"
         )
 
-    # Create new user
     user_dict = {
         "email": user.email,
         "full_name": user.full_name,
@@ -84,7 +82,6 @@ async def login(user_credentials: UserLogin):
             detail="Inactive user"
         )
 
-    # Create access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user["email"]}, expires_delta=access_token_expires
@@ -102,14 +99,11 @@ async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset email"""
     user = users_collection.find_one({"email": request.email})
 
-    # Don't reveal if user exists or not for security
     if not user:
         return {"message": "If the email exists, a password reset link has been sent"}
 
-    # Generate reset token
     reset_token = secrets.token_urlsafe(32)
 
-    # Store reset token in database
     reset_token_dict = {
         "token": reset_token,
         "email": request.email,
@@ -117,13 +111,10 @@ async def forgot_password(request: ForgotPasswordRequest):
         "used": False
     }
 
-    # Delete any existing unused tokens for this email
     reset_tokens_collection.delete_many({"email": request.email, "used": False})
 
-    # Insert new token
     reset_tokens_collection.insert_one(reset_token_dict)
 
-    # Send email
     send_password_reset_email(request.email, reset_token)
 
     return {"message": "If the email exists, a password reset link has been sent"}
@@ -131,7 +122,6 @@ async def forgot_password(request: ForgotPasswordRequest):
 @router.post("/reset-password")
 async def reset_password(request: ResetPasswordRequest):
     """Reset password using token"""
-    # Find token in database
     token_doc = reset_tokens_collection.find_one({
         "token": request.token,
         "used": False
@@ -143,7 +133,6 @@ async def reset_password(request: ResetPasswordRequest):
             detail="Invalid or expired reset token"
         )
 
-    # Check if token is expired (1 hour)
     token_created_at = token_doc["created_at"].replace(tzinfo=timezone.utc)
     token_age = datetime.now(timezone.utc) - token_created_at
     if token_age > timedelta(hours=1):
@@ -152,7 +141,6 @@ async def reset_password(request: ResetPasswordRequest):
             detail="Reset token has expired"
         )
 
-    # Update user password
     email = token_doc["email"]
     hashed_password = get_password_hash(request.new_password)
 
@@ -167,7 +155,6 @@ async def reset_password(request: ResetPasswordRequest):
             detail="User not found"
         )
 
-    # Mark token as used
     reset_tokens_collection.update_one(
         {"token": request.token},
         {"$set": {"used": True}}

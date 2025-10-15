@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
@@ -19,9 +19,8 @@ export default function Login() {
 
     const result = await login(email, password);
 
-
     if (result.success) {
-      navigate("/");
+      navigate("/dashboard");
     } else {
       setError(result.error);
     }
@@ -36,6 +35,12 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full"
       >
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition mb-6"
+        >
+          <span className="text-xl">←</span> Back to Home
+        </Link>
         <h2 className="text-3xl font-bold text-green-700 mb-2 text-center">
           Welcome Back
         </h2>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
@@ -40,7 +40,7 @@ export default function Signup() {
     const result = await signup(formData.email, formData.password, formData.full_name);
 
     if (result.success) {
-      navigate("/");
+      navigate("/dashboard");
     } else {
       setError(result.error);
     }
@@ -55,6 +55,12 @@ export default function Signup() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full"
       >
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition mb-6"
+        >
+          <span className="text-xl">←</span> Back to Home
+        </Link>
         <h2 className="text-3xl font-bold text-green-700 mb-2 text-center">
           Create Account
         </h2>
@@ -80,7 +86,7 @@ export default function Signup() {
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="John Doe"
+              placeholder="Zack"
             />
           </div>
 

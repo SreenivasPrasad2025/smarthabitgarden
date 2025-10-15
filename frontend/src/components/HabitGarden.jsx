@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import api from "../services/api";
 
 function Stage({ streak }) {
-  // 🌱 Simple visual growth: height scales with streak; emoji changes
   const height = Math.min(40 + streak * 6, 140);
   const stage =
     streak < 3 ? "🌱" : streak < 7 ? "🌿" : streak < 14 ? "🌴" : "🌸";
@@ -26,7 +25,6 @@ function Stage({ streak }) {
 }
 
 export default function HabitGarden({ habits, onUpdate }) {
-  // 🌿 Grow habit once per day
   const growHabit = async (habit) => {
     try {
       const res = await api.put(`/habits/${habit._id}/grow`);
@@ -49,13 +47,11 @@ export default function HabitGarden({ habits, onUpdate }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
       {habits.map((habit) => {
-        // ✅ Determine if grown today
         const grownToday =
           habit.last_streak_date &&
           new Date(habit.last_streak_date).toDateString() ===
             new Date().toDateString();
 
-        // 📅 Format readable date
         const formattedDate = habit.last_streak_date
           ? new Date(habit.last_streak_date).toLocaleDateString()
           : "—";
@@ -66,7 +62,6 @@ export default function HabitGarden({ habits, onUpdate }) {
             className="p-4 bg-white rounded-2xl shadow border hover:shadow-md transition"
             whileHover={{ scale: 1.02 }}
           >
-            {/* 🧠 Header */}
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-bold text-lg text-green-700">
@@ -83,7 +78,6 @@ export default function HabitGarden({ habits, onUpdate }) {
               </button>
             </div>
 
-            {/* 📊 Progress Bar */}
             <div
               className="mt-3 w-full h-3 bg-green-100 rounded-full overflow-hidden"
               aria-label="Streak progress"
@@ -108,7 +102,6 @@ export default function HabitGarden({ habits, onUpdate }) {
               </p>
             </div>
 
-            {/* 🌿 Grow Button */}
             <div className="mt-4">
               <button
                 onClick={() => growHabit(habit)}

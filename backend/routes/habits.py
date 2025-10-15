@@ -84,10 +84,10 @@ def get_calendar_data(current_user: UserResponse = Depends(get_current_active_us
 @router.get("/insights")
 def habit_insights(current_user: UserResponse = Depends(get_current_active_user)):
     habits = list(habits_collection.find({"user_id": current_user.id}))
-    total_logged_days = days_log_collection.count_documents({"user_id": current_user.id})  # ✅ distinct days of growth
+    total_logged_days = days_log_collection.count_documents({"user_id": current_user.id})
 
     if total_logged_days == 0:
-        total_logged_days = 1  # baseline for visuals, if portal just started
+        total_logged_days = 1
 
     if not habits:
         return {
@@ -113,7 +113,7 @@ def habit_insights(current_user: UserResponse = Depends(get_current_active_user)
 
     return {
         "total_habits": len(habits),
-        "total_streaks": total_logged_days,  # ✅ actual distinct growth days
+        "total_streaks": total_logged_days,
         "average_streak": avg_streak,
         "best_habit": {
             "name": best.get("name", "Your Habit"),
@@ -133,15 +133,13 @@ def grow_habit(habit_id: str, current_user: UserResponse = Depends(get_current_a
     today = datetime.now(timezone.utc).date()
     last_streak = habit.get("last_streak_date")
 
-    # 🚫 Prevent multiple grows per day for same habit
     if last_streak:
-        # MongoDB returns timezone-naive datetimes, convert to UTC-aware for proper comparison
         if last_streak.tzinfo is None:
             last_streak = last_streak.replace(tzinfo=timezone.utc)
         if last_streak.date() == today:
             raise HTTPException(status_code=400, detail="Already grown today 🌱")
 
-    # ✅ Update streak logic
+
     if last_streak:
         days_since = (today - last_streak.date()).days
         if days_since == 1:
@@ -159,12 +157,11 @@ def grow_habit(habit_id: str, current_user: UserResponse = Depends(get_current_a
 
     habits_collection.update_one({"_id": ObjectId(habit_id)}, {"$set": updated})
 
-    # ✅ Log unique portal day per user
+
     today_str = str(today)
     existing_day = days_log_collection.find_one({"date": today_str, "user_id": current_user.id})
     if not existing_day:
         days_log_collection.insert_one({"date": today_str, "user_id": current_user.id, "created_at": datetime.now(timezone.utc)})
 
-    # Return updated habit
     new_doc = habits_collection.find_one({"_id": ObjectId(habit_id)})
     return to_str_id(new_doc)
